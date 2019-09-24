@@ -1,21 +1,30 @@
+// env
+// https://dwatow.github.io/2019/01-26-node-with-env-first/
+const env = require('dotenv');
+env.config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
 // Log message at command line when node runtime
 const morgan = require('morgan');
+// MongoDB
 const mongoose = require('mongoose');
-
 mongoose.connect(
     `mongodb+srv://dbNodeShop:${process.env.MOBGO_ATLAS_PASSWORD}@node-rest-shop-aizvz.mongodb.net/test?retryWrites=true&w=majority`,
     {
         useNewUrlParser: true,
     }
 );
+
+// bodyParser
 // Will parse request body params and set value in req.body
 const bodyParser = require('body-parser');
+
+// Api Router
 const productsRouter = require('./api/routes/products');
 const ordersRouter = require('./api/routes/orders');
-// cors
+
+// CORS
 const corsOptions = {
     // origin: [
     //     '*',
@@ -27,20 +36,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// app.use((req, res, next) => {
-//     res.header('Access-Control-Allow-Origin', '*'); 
-//     res.header('Access-Control-Allow-Origin-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-
-//     if (req.method === 'OPTIONS') {
-//         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-//         return res.status(200).json({});
-//     }
-//     // if you don't call next() node api flow will stop this
-//     // because app.use is middleware, it will do something after action, like pipeline 
-//     // So Don't call next() just like stop water flow here.
-//     // So that it will cause api pedding, and then timeout.
-//     next();
-// });
 
 // log
 app.use(morgan('dev'));
@@ -50,7 +45,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(bodyParser.json());
-
+// Api Router
 app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
 
@@ -65,9 +60,9 @@ app.use((error, req, res, next) => {
         .status(error.status || 500)
         .json({
             error: {
+                status: error.status,
                 message: error.message,
             }
         });
-    console.log('final test')
 });
 module.exports = app;
