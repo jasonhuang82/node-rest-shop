@@ -13,16 +13,18 @@ router.get('/', (req, res, next) => {
     
     const intLimit = parseInt(limit)
 
+    const field = `_id name price`;
     Product
         .find()
+        .select(field)
         .limit(intLimit)
         .exec()
         .then(_products => {
-            console.log('_products',_products);
             // if resource is empty will not return null or anything, it will return []
             res
                 .status(200)
                 .json({
+                    status: 200,
                     products: _products,
                 })
         })
@@ -31,6 +33,7 @@ router.get('/', (req, res, next) => {
             res
                 .status(500)
                 .json({
+                    status: 500,
                     error: err,
                 });
         })
@@ -46,6 +49,7 @@ router.get('/:productId', (req, res, next) => {
                 res
                     .status(200)
                     .json({
+                        status: 200,
                         product: [],
                     })
                 return;
@@ -53,6 +57,7 @@ router.get('/:productId', (req, res, next) => {
             res
                 .status(200)
                 .json({
+                    status: 200,
                     product,
                 })
         })
@@ -61,20 +66,26 @@ router.get('/:productId', (req, res, next) => {
             res
                 .status(500)
                 .json({
+                    status: 500,
                     error: err,
                 })
         })
 });
 
 // Create
+/**
+* @param {string}  name
+* @param {number}  price
+ */
 router.post('/', (req, res, next) => {
     const paramsKeys = ['name', 'price'];
     for (let key of paramsKeys) {
         if (!(key in req.body)) {
             console.log(`${key} not give`);
             res
-                .status(403)
+                .status(500)
                 .json({
+                    status: 500,
                     message: `${key} not give`
                 })
             return;
@@ -85,6 +96,7 @@ router.post('/', (req, res, next) => {
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
         price: req.body.price,
+        createTime: Date.now(),
     });
     product
         .save()
@@ -93,6 +105,7 @@ router.post('/', (req, res, next) => {
             res
                 .status(201)
                 .json({
+                    status: 201,
                     message: 'Add Data Success',
                     product: _product,
                 })
@@ -102,12 +115,18 @@ router.post('/', (req, res, next) => {
             res
                 .status(500)
                 .json({
+                    status: 500,
                     error: err,
                 })
         })
 });
 
 // Update
+/**
+ * @param {string} id
+ * @param {string}  name
+ * @param {number}  price
+ */
 router.put('/:productId', (req, res, next) => {
     const id = req.params.productId;
     Product
@@ -126,6 +145,7 @@ router.put('/:productId', (req, res, next) => {
             res
                 .status(200)
                 .json({
+                    status: 200,
                     result,
                 });
         })
@@ -134,7 +154,8 @@ router.put('/:productId', (req, res, next) => {
             res
                 .status(500)
                 .json({
-                    error: err
+                    status: 500,
+                    error: err,
                 })
         })
 });
@@ -156,6 +177,7 @@ router.delete('/:productId', (req, res, next) => {
             res
                 .status(200)
                 .json({
+                    status: 200,
                     result,
                 })
         })
@@ -164,6 +186,7 @@ router.delete('/:productId', (req, res, next) => {
             res
                 .status(500)
                 .json({
+                    status: 500,
                     error: err,
                 })
         })

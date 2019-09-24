@@ -6,6 +6,7 @@ router.get('/', (req, res, next) => {
     res
         .status(200)
         .json({
+            status: 200,
             message: 'Order Data Success'
         })
 });
@@ -14,10 +15,12 @@ router.get('/:orderId', (req, res, next) => {
     const id = req.params.orderId;
     if (id === 'special') {
         res.status(200).json({
+            status: 200,
             message: 'Order InCorrect ID',
         });
     } else {
         res.status(200).json({
+            status: 200,
             message: 'Order  Correct ID',
         });
     }
@@ -32,6 +35,7 @@ router.post('/', (req, res, next) => {
     res
         .status(201)
         .json({
+            status: 201,
             message: 'Add Order Data Success',
             order,
         })
