@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Product = require('../models/product');
-
+const getDomain = require('../../utils/getDomain');
 // Query All
 router.get('/', (req, res, next) => {
     const {
@@ -24,8 +24,15 @@ router.get('/', (req, res, next) => {
             res
                 .status(200)
                 .json({
-                    status: 200,
-                    products: _products,
+                    products: _products.map(_product => {
+                        return {
+                            ..._product._doc,
+                            request: {
+                                type: 'GET',
+                                url: `${getDomain()}/${_product._id}`,
+                            },
+                        };
+                    }),
                 })
         })
         .catch(err => {
@@ -33,7 +40,6 @@ router.get('/', (req, res, next) => {
             res
                 .status(500)
                 .json({
-                    status: 500,
                     error: err,
                 });
         })
@@ -49,7 +55,6 @@ router.get('/:productId', (req, res, next) => {
                 res
                     .status(200)
                     .json({
-                        status: 200,
                         product: [],
                     })
                 return;
@@ -57,7 +62,6 @@ router.get('/:productId', (req, res, next) => {
             res
                 .status(200)
                 .json({
-                    status: 200,
                     product,
                 })
         })
@@ -66,7 +70,6 @@ router.get('/:productId', (req, res, next) => {
             res
                 .status(500)
                 .json({
-                    status: 500,
                     error: err,
                 })
         })
@@ -85,7 +88,6 @@ router.post('/', (req, res, next) => {
             res
                 .status(500)
                 .json({
-                    status: 500,
                     message: `${key} not give`
                 })
             return;
@@ -105,7 +107,6 @@ router.post('/', (req, res, next) => {
             res
                 .status(201)
                 .json({
-                    status: 201,
                     message: 'Add Data Success',
                     product: _product,
                 })
@@ -115,7 +116,6 @@ router.post('/', (req, res, next) => {
             res
                 .status(500)
                 .json({
-                    status: 500,
                     error: err,
                 })
         })
@@ -145,7 +145,6 @@ router.put('/:productId', (req, res, next) => {
             res
                 .status(200)
                 .json({
-                    status: 200,
                     result,
                 });
         })
@@ -154,7 +153,6 @@ router.put('/:productId', (req, res, next) => {
             res
                 .status(500)
                 .json({
-                    status: 500,
                     error: err,
                 })
         })
@@ -175,9 +173,8 @@ router.delete('/:productId', (req, res, next) => {
         .exec()
         .then(result => {
             res
-                .status(200)
+                .status(204)
                 .json({
-                    status: 200,
                     result,
                 })
         })
@@ -186,7 +183,6 @@ router.delete('/:productId', (req, res, next) => {
             res
                 .status(500)
                 .json({
-                    status: 500,
                     error: err,
                 })
         })
