@@ -15,14 +15,17 @@ mongoose.connect(
         useNewUrlParser: true,
     }
 );
+mongoose.Promise = global.Promise;
 
 // bodyParser
 // Will parse request body params and set value in req.body
 const bodyParser = require('body-parser');
 
+
 // Api Router
 const productsRouter = require('./api/routes/products');
 const ordersRouter = require('./api/routes/orders');
+
 
 // CORS
 const corsOptions = {
@@ -39,6 +42,10 @@ app.use(cors(corsOptions));
 
 // log
 app.use(morgan('dev'));
+// 將圖片資料夾路徑，設成可以給外部存取，不然 Browser 會因為 Server 所有資料夾都是外部無法存取的所以讀不到圖片，Server 只看 Router 有
+// 設定的路徑，這麼做也合理若 Browser 能透過 URL 就能讀取 Server 的資源那麼 Source Code ，還有像 .env 這種較隱私檔案就直接給人看光
+//，解法是可以只將圖片資料夾設成可給外部存取的資源路徑。
+app.use('/uploads', express.static('uploads'));
 // body-parse
 app.use(bodyParser.urlencoded({
     extended: false,
