@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const uuid = require('node-uuid');
 const Product = require('../models/product');
 const getDomain = require('../../utils/getDomain');
+const path = require('path');
+const sharp = require('sharp');
 // multer -> body-parser 無法處理二進位以及 form-data 格式的 body，multer 是專門處理 form-data 的 middleware
 const multerConfig = require('../../utils/multerConfig');
 const upload = multerConfig();
@@ -108,6 +110,14 @@ router.post('/', upload.single('productImage'), async (req, res, next) => {
         file,
     } = req;
     try {
+        const originFile = file.originalname.replace(/.(jpg|jpeg|png|webp)/g,'');
+        // 以 webp 方式壓縮
+        await sharp(file.path)
+            .webp({quality: 50})
+            .toFile(
+                path.resolve(__dirname,'../../uploads',`${ uuid.v1()}${originFile}.webp`)
+            )
+
         const product = new Product({
             _id: mongoose.Types.ObjectId(),
             name: productName,
