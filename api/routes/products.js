@@ -111,11 +111,12 @@ router.post('/', upload.single('productImage'), async (req, res, next) => {
     } = req;
     try {
         const originFile = file.originalname.replace(/.(jpg|jpeg|png|webp)/g,'');
+        const storePath = `uploads/${ uuid.v1()}${originFile }.webp`;
         // 以 webp 方式壓縮
         await sharp(file.path)
             .webp({quality: 50})
             .toFile(
-                path.resolve(__dirname,'../../uploads',`${ uuid.v1()}${originFile}.webp`)
+                path.resolve(__dirname,'../../', storePath)
             )
 
         const product = new Product({
@@ -123,14 +124,16 @@ router.post('/', upload.single('productImage'), async (req, res, next) => {
             name: productName,
             price: productPrice,
             createTime: Date.now(),
-            productImage: file.path,
+            productImage: {
+                jpg: `/uploads/${file.filename}`,
+                webp: `/${storePath}`,
+            },
         });
         
         const _product = await product.save();
         res
             .status(201)
             .json({
-                message: 'Add Data Success',
                 created: {
                     _id: _product._id,
                     name: _product.name,

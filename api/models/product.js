@@ -10,9 +10,19 @@ const productSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
+    // productImage: {
+    //     type: String,
+    //     required: true,
+    // },
     productImage: {
-        type: String,
-        required: true,
+        jpg: {
+            type: String,
+            required: true,
+        },
+        webp: {
+            type: String,
+            required: true,
+        }
     },
     createTime: Date,
 });
