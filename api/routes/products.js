@@ -10,6 +10,7 @@ const sharp = require('sharp');
 // multer -> body-parser 無法處理二進位以及 form-data 格式的 body，multer 是專門處理 form-data 的 middleware
 const multerConfig = require('../../utils/multerConfig');
 const upload = multerConfig();
+const checkAuth = require('../middleware/checkAuth');
 // Query All
 router.get('/', async (req, res, next) => {
     const {
@@ -63,7 +64,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // Query By ID
-router.get('/:productId', async (req, res, next) => {
+router.get('/:productId', checkAuth, async (req, res, next) => {
     const id = req.params.productId;
     const field = '_id name price productImage';
     try {
@@ -101,7 +102,7 @@ router.get('/:productId', async (req, res, next) => {
 * @param {string}  name
 * @param {number}  price
  */
-router.post('/', upload.single('productImage'), async (req, res, next) => {
+router.post('/', checkAuth, upload.single('productImage'), async (req, res, next) => {
     const {
         body: {
             name: productName,
@@ -161,7 +162,7 @@ router.post('/', upload.single('productImage'), async (req, res, next) => {
  * @param {string}  name
  * @param {number}  price
  */
-router.put('/:productId', async (req, res, next) => {
+router.put('/:productId', checkAuth, async (req, res, next) => {
     const {
         params: {
             productId: id,
@@ -202,7 +203,7 @@ router.put('/:productId', async (req, res, next) => {
 });
 
 // Delete
-router.delete('/:productId', async (req, res, next) => {
+router.delete('/:productId', checkAuth, async (req, res, next) => {
     // const id = req.params.productId;
     const {
         params: {
