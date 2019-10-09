@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const getDomain = require('../../utils/getDomain');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 router.post('/signup', async (req, res, next) => {
     try {
         const existUser = await User.find({
@@ -48,6 +50,60 @@ router.post('/signup', async (req, res, next) => {
             .json({
                 message: 'User Created',
             });
+    } catch (error) {
+        res
+            .status(500)
+            .json({
+                error,
+            });
+    }
+});
+
+router.post('/login', async (req, res, next) => {
+    try {
+        const _user = await (
+            User
+                .find({
+                    email: req.body.email,
+                })
+                .exec()
+        );
+
+        const [matchUser] = _user;
+
+        if (!matchUser) {
+            return res
+                .status(401) // 沒有授權
+                .json({
+                    message: 'Auth failed',
+                })
+        }
+
+        const isVaildPassword= bcrypt.compareSync(req.body.password, matchUser.password);
+        if (isVaildPassword) {
+            const token = jwt.sign(
+                {
+                    email: matchUser.email,
+                    userId: matchUser._id,
+                },
+                process.env.JWT_PRIVATE_KEY,
+                {
+                    expiresIn: "1h",
+                }
+            );
+            return res
+                .status(200)
+                .json({
+                    message: 'Auth Successful',
+                    token,
+                })
+        } else {
+            return res
+                .status(401) // 沒有授權
+                .json({
+                    message: 'Auth failed',
+                })
+        }
     } catch (error) {
         res
             .status(500)
