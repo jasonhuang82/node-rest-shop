@@ -25,7 +25,7 @@ const bodyParser = require('body-parser');
 // Api Router
 const productsRouter = require('./api/routes/products');
 const ordersRouter = require('./api/routes/orders');
-
+const userRouter = require('./api/routes/user');
 
 // CORS
 const corsOptions = {
@@ -55,6 +55,7 @@ app.use(bodyParser.json());
 // Api Router
 app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
+app.use('/user', userRouter);
 
 app.use((req, res, next) => {
     const error = new Error('Not Found');
