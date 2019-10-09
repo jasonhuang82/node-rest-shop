@@ -13,6 +13,8 @@ mongoose.connect(
     `mongodb+srv://dbNodeShop:${process.env.MOBGO_ATLAS_PASSWORD}@node-rest-shop-aizvz.mongodb.net/test?retryWrites=true&w=majority`,
     {
         useNewUrlParser: true,
+        // https://github.com/Automattic/mongoose/issues/6890
+        useCreateIndex: true,
     }
 );
 mongoose.Promise = global.Promise;
